@@ -40,6 +40,9 @@ class IncomingMessage
     /** @var bool */
     protected $isFromBot = false;
 
+    /** @var string */
+    protected $customConversationIdentifier;
+
     public function __construct($message, $sender, $recipient, $payload = null)
     {
         $this->message = $message;
@@ -81,11 +84,24 @@ class IncomingMessage
     }
 
     /**
+     * @param $identifier
+     * @return $this
+     */
+    public function setCustomConversationIdentifier($identifier)
+    {
+        $this->customConversationIdentifier = $identifier;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getConversationIdentifier()
     {
-        return 'conversation-'.sha1($this->getSender()).'-'.sha1($this->getRecipient());
+        if (!empty($this->customConversationIdentifier)) {
+            return 'conversation-custom-' . sha1($this->customConversationIdentifier);
+        }
+        return 'conversation-' . sha1($this->getSender()) . '-' . sha1($this->getRecipient());
     }
 
     /**
